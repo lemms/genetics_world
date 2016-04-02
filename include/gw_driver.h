@@ -10,7 +10,7 @@ namespace GeneticsWorld
     public:
         Driver();
         ~Driver();
-        void setup_world();
+        void setup();
         void time_step();
     private:
         World _world;
@@ -28,7 +28,7 @@ GeneticsWorld::Driver::~Driver()
 }
 
 template <class Creature, template <class> World>
-void GeneticsWorld::Driver::setup_world()
+void GeneticsWorld::Driver::setup()
 {
     for (size_t c = 0; c < 100; ++c)
     {
