@@ -3,6 +3,8 @@
 #ifndef GW_CREATURE_TRACKER
 #define GW_CREATURE_TRACKER
 
+#include <list>
+
 namespace GeneticsWorld
 {
     class Behavior;

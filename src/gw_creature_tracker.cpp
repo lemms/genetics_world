@@ -1,7 +1,7 @@
 // gw_creature_tracker.cpp
 
-#include "gw_behavior_factory.h"
-#include "gw_sense_factory.h"
+#include <vector>
+#include <cmath>
 #include "gw_creature_tracker.h"
 
 GeneticsWorld::CreatureTracker::BehaviorImpl::BehaviorImpl(CreatureTracker* creature_tracker,
@@ -92,6 +92,65 @@ float GeneticsWorld::Sense::get_inheritance() const
     return _impl->get_inheritance();
 }
 
+template <class T>
+void build_genetics(std::list<T*>& child_features,
+                    short num_parent_features,
+                    const std::vector<float>& parent_feature_inheritance,
+                    const std::vector<std::list<T*>::iterator>& parent_feature)
+{    
+    // randomly add or subtract a feature
+    short random_feature_increment = rand() % 100;
+    if (random_feature_increment < 5)
+    {
+        num_parent_features++;
+    }
+    else if (random_feature_increment < 10)
+    {
+        num_parent_features--;
+    }
+
+    float total_influence = 0.0f;
+    for (std::vector<float>::const_iterator it = parent_feature_inheritance.cbegin(), it_end = parent_feature_inheritance.cend();
+         it != it_end; ++it)
+    {
+        total_influence += *it;
+    }
+
+    short num_randomizing_indices = 10000;
+    std::vector<short> randomizing_indices(num_randomizing_indices);
+
+    short index = 0;
+    short original_index = 0;
+    for (std::vector<float>::const_iterator it = parent_feature_inheritance.cbegin(), it_end = parent_feature_inheritance.cend();
+         it != it_end; ++it, ++original_index)
+    {
+        float percentage = *it / total_influence;
+        short indices = static_cast<short>(percentage * static_cast<float>(num_randomizing_indices));
+        for (short i = 0; i < indices; ++i)
+        {
+            if (index < randomizing_indices.size())
+            {
+                randomizing_indices[index] = original_index;
+            }
+            else
+            {
+                break;
+            }
+            index++;
+        }
+    }
+
+    // TODO: de-duplicate
+    for (short f = 0; f < num_parent_features; ++f)
+    {
+        short random_index = rand() % num_randomizing_indices;
+        child_features.push_front(new T(*(*parent_feature[random_index]));
+    }
+
+    // TODO: add a random mutation
+}
+
+
 GeneticsWorld::CreatureTracker::CreatureTracker(short cell,
                                                 const CreatureTracker* lhs_parent,
                                                 const CreatureTracker* rhs_parent)
@@ -115,15 +174,62 @@ GeneticsWorld::CreatureTracker::CreatureTracker(short cell,
         if (rhs_parent != NULL)
         {
             // two parents
+            std::vector<float>& parent_behavior_inheritance;
+            std::vector<std::list<BehaviorImpl*>::iterator>& parent_behaviors;
+            for (std::list<BehaviorImpl*>::const_iterator it = lhs_parent->_behaviors.cbegin(), it_end = lhs_parent->_behaviors.end();
+                 it != it_end; ++it)
+            {
+                parent_behavior_inheritance.push_back(fabsf(it->get_inheritance()));
+                parent_behaviors.push_back(it);
+            }
+            for (std::list<BehaviorImpl*>::const_iterator it = rhs_parent->_behaviors.cbegin(), it_end = rhs_parent->_behaviors.end();
+                 it != it_end; ++it)
+            {
+                parent_behavior_inheritance.push_back(fabsf(it->get_inheritance()));
+                parent_behaviors.push_back(it);
+            }
+
+            std::vector<float>& parent_sense_inheritance;
+            std::vector<std::list<SenseImpl*>::iterator>& parent_senses;
+            for (std::list<SenseImpl*>::const_iterator it = lhs_parent->_senses.cbegin(), it_end = lhs_parent->_senses.end();
+                 it != it_end; ++it)
+            {
+                parent_sense_inheritance.push_back(fabsf(it->get_inheritance()));
+                parent_senses.push_back(it);
+            }
+            for (std::list<SenseImpl*>::const_iterator it = rhs_parent->_senses.cbegin(), it_end = rhs_parent->_senses.end();
+                 it != it_end; ++it)
+            {
+                parent_sense_inheritance.push_back(fabsf(it->get_inheritance()));
+                parent_senses.push_back(it);
+            }
+
+            build_genetics<BehaviorImpl>(_behaviors, parent_behavior_inheritance.size() / 2, parent_behavior_inheritance, parent_behaviors);
+            build_genetics<SenseImpl>(_senses, parent_sense_inheritance.size() / 2, parent_sense_inheritance, parent_senses);
         }
         else
         {
             // one parent
-            std::vector<std::list<BehaviorImpl*> 
-            for (std::list<BehaviorImpl*>::iterator it = lhs_parent->_behaviors.begin(), it_end = other._behaviors.end();
+            std::vector<float>& parent_behavior_inheritance;
+            std::vector<std::list<BehaviorImpl*>::iterator>& parent_behaviors;
+            for (std::list<BehaviorImpl*>::const_iterator it = lhs_parent->_behaviors.cbegin(), it_end = lhs_parent->_behaviors.end();
                  it != it_end; ++it)
             {
+                parent_behavior_inheritance.push_back(fabsf(it->get_inheritance()));
+                parent_behaviors.push_back(it);
             }
+
+            std::vector<float>& parent_sense_inheritance;
+            std::vector<std::list<SenseImpl*>::iterator>& parent_senses;
+            for (std::list<SenseImpl*>::const_iterator it = lhs_parent->_senses.cbegin(), it_end = lhs_parent->_senses.end();
+                 it != it_end; ++it)
+            {
+                parent_sense_inheritance.push_back(fabsf(it->get_inheritance()));
+                parent_senses.push_back(it);
+            }
+
+            build_genetics<BehaviorImpl>(_behaviors, parent_behavior_inheritance.size(), parent_behavior_inheritance, parent_behaviors);
+            build_genetics<SenseImpl>(_senses, parent_sense_inheritance.size(), parent_sense_inheritance, parent_senses);
         }
     }
 }
