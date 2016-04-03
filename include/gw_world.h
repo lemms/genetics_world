@@ -5,6 +5,7 @@
 
 #include <vector>
 #include <list>
+#include "gw_behavior_factory.h"
 #include "gw_creature_tracker.h"
 
 namespace GeneticsWorld
@@ -163,8 +164,10 @@ template <class Creature>
 void GeneticsWorld::World::_spawn_new_creature_in_cell(short cell)
 {
     CreaturePair creature_pair = _spawn_new_creature_in_cell_with_parents(cell, NULL, NULL);
-    creature_pair.first->setup(creature_pair.second->get_behavior_factory(),
-                               creature_pair.second->get_sense_factory());
+    BehaviorFactory behavior_factory(creature_pair.second);
+    SenseFactory sense_factory(creature_pair.second);
+    creature_pair.first->setup(behavior_factory,
+                               sense_factory);
 }
 
 #endif // GW_WORLD

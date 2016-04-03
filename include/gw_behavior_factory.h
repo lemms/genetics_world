@@ -10,7 +10,7 @@ namespace GeneticsWorld
     class BehaviorFactory {
     public:
         BehaviorFactory(CreatureTracker* creature_tracker);
-        Behavior* get_behavior_asexual_reproduction();
+        Behavior* get_behavior_asexual_reproduction(float inheritance);
     private:
         CreatureTracker* _creature_tracker;
     };

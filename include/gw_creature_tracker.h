@@ -25,7 +25,7 @@ namespace GeneticsWorld
         public:
             BehaviorImpl(CreatureTracker* creature_tracker, float inheritance);
             virtual ~BehaviorImpl();
-            virtual void do_behavior() const = 0;
+            virtual void do_behavior() = 0;
             void set_inheritance(float inheritance);
             float get_inheritance() const;
         protected:
@@ -35,13 +35,13 @@ namespace GeneticsWorld
 
         class SenseImpl {
         public:
-            SenseImpl(CreatureTracker* creature_tracker, float inheritance);
+            SenseImpl(const CreatureTracker* creature_tracker, float inheritance);
             virtual ~SenseImpl();
             virtual float do_sense() const = 0;
             void set_inheritance(float inheritance);
             float get_inheritance() const;
         protected:
-            CreatureTracker* _creature_tracker;
+            const CreatureTracker* _creature_tracker;
             float _inheritance;
         };
 
@@ -51,7 +51,7 @@ namespace GeneticsWorld
     private:
         short _life_span;
         mutable float _energy;
-        mutable short _behaviors_used;
+        short _behaviors_used;
         mutable short _senses_used;
         short _max_behaviors_per_time_step;
         short _max_senses_per_time_step;
@@ -70,8 +70,6 @@ namespace GeneticsWorld
         void do_behavior() const;
         void set_inheritance(float inheritance);
         float get_inheritance() const;
-    private:
-        Sense
     };
 
     class Sense {

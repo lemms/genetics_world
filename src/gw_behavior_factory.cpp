@@ -9,9 +9,9 @@ GeneticsWorld::BehaviorFactory::BehaviorFactory(CreatureTracker* creature_tracke
 {
 }
 
-GeneticsWorld::Behavior* GeneticsWorld::BehaviorFactory::get_behavior_asexual_reproduction()
+GeneticsWorld::Behavior* GeneticsWorld::BehaviorFactory::get_behavior_asexual_reproduction(float inheritance)
 {
-    CreatureTracker::BehaviorImpl* behavior_asexual_reproduction = new BehaviorAsexualReproductionImpl(_creature_tracker);
+    CreatureTracker::BehaviorImpl* behavior_asexual_reproduction = new BehaviorAsexualReproductionImpl(_creature_tracker, inheritance);
     _creature_tracker->_behaviors.push_front(behavior_asexual_reproduction);
     return new Behavior(behavior_asexual_reproduction);
 }

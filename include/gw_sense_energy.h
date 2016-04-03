@@ -9,7 +9,7 @@ namespace GeneticsWorld
 {
     class SenseEnergyImpl : public CreatureTracker::SenseImpl {
     public:
-        SenseEnergyImpl(CreatureTracker* creature_tracker);
+        SenseEnergyImpl(const CreatureTracker* creature_tracker, float inheritance);
         virtual ~SenseEnergyImpl();
         virtual float do_sense() const;
     };

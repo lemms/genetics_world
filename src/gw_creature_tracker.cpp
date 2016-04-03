@@ -23,7 +23,7 @@ float GeneticsWorld::CreatureTracker::BehaviorImpl::get_inheritance() const
     return _inheritance;
 }
 
-GeneticsWorld::CreatureTracker::SenseImpl::SenseImpl(CreatureTracker* creature_tracker,
+GeneticsWorld::CreatureTracker::SenseImpl::SenseImpl(const CreatureTracker* creature_tracker,
                                                      float inheritance)
     : _creature_tracker(creature_tracker),
       _inheritance(inheritance)
@@ -51,7 +51,7 @@ GeneticsWorld::Behavior::~Behavior()
 {
 }
 
-void GeneticsWorld::Behavior::do_behavior() const
+void GeneticsWorld::Behavior::do_behavior()
 {
     _impl->do_behavior();
 }
@@ -101,10 +101,12 @@ GeneticsWorld::CreatureTracker::CreatureTracker(short cell,
       _max_senses_per_time_step(2),
       _is_asexually_reproducing(false),
       _is_sexually_reproducing(false),
-      _cell(cell),
-      _behavior_factory(this),
-      _sense_factory(this)
+      _cell(cell)
 {
+    // TODO: copy parent behaviors and senses based on inheritance values
+    // TODO: add random mutations
+    // 1) add new behaiors/sense randomly
+    // 2) modify inheritance values randomly
 }
 
 GeneticsWorld::CreatureTracker::~CreatureTracker()
@@ -132,12 +134,12 @@ GeneticsWorld::CreatureTracker::CreatureTracker(const CreatureTracker& other)
     _is_asexually_reproducing = other._is_asexually_reproducing;
     _is_sexually_reproducing = other._is_sexually_reproducing;
     _cell = other._cell;
-    for (std::list<BehaviorImpl*>::iterator it = _behaviors.begin(), it_end = _behaviors.end();
+    for (std::list<BehaviorImpl*>::iterator it = other._behaviors.begin(), it_end = other._behaviors.end();
          it != it_end; ++it)
     {
         _behaviors.push_front(new BehaviorImpl(*it));
     }
-    for (std::list<SenseImpl*>::iterator it = _senses.begin(), it_end = _senses.end();
+    for (std::list<SenseImpl*>::iterator it = other._senses.begin(), it_end = other._senses.end();
          it != it_end; ++it)
     {
         _senses.push_front(new SenseImpl(*it));
@@ -160,9 +162,21 @@ GeneticsWorld::CreatureTracker& GeneticsWorld::CreatureTracker::operator=(const 
         for (std::list<BehaviorImpl*>::iterator it = _behaviors.begin(), it_end = _behaviors.end();
              it != it_end; ++it)
         {
-            _behaviors.push_front(new BehaviorImpl(*it));
+            delete *it;
         }
         for (std::list<SenseImpl*>::iterator it = _senses.begin(), it_end = _senses.end();
+             it != it_end; ++it)
+        {
+            delete *it;
+        }
+        _behaviors.clear();
+        _senses.clear();
+        for (std::list<BehaviorImpl*>::iterator it = other._behaviors.begin(), it_end = other._behaviors.end();
+             it != it_end; ++it)
+        {
+            _behaviors.push_front(new BehaviorImpl(*it));
+        }
+        for (std::list<SenseImpl*>::iterator it = other._senses.begin(), it_end = other._senses.end();
              it != it_end; ++it)
         {
             _senses.push_front(new SenseImpl(*it));
@@ -190,6 +204,7 @@ void GeneticsWorld::CreatureTracker::time_step()
 {
     _behaviors_used = 0;
     _senses_used = 0;
+    _energy -= 1.0f;
     _life_span--;
 }
 

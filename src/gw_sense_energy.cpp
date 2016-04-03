@@ -2,7 +2,7 @@
 
 #include "gw_sense_energy.h"
 
-GeneticsWorld::SenseEnergyImpl::SenseEnergyImpl(CreatureTracker* creature_tracker,
+GeneticsWorld::SenseEnergyImpl::SenseEnergyImpl(const CreatureTracker* creature_tracker,
                                                 float inheritance)
     : SenseImpl(creature_tracker, inheritance)
 {
