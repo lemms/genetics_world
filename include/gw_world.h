@@ -5,6 +5,7 @@
 
 #include <vector>
 #include <list>
+#include "gw_creature_tracker.h"
 
 namespace GeneticsWorld
 {
