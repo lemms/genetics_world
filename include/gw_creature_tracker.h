@@ -5,6 +5,8 @@
 
 namespace GeneticsWorld
 {
+    class Behavior;
+    class Sense;
     class CreatureTracker
     {
     public:
@@ -20,6 +22,9 @@ namespace GeneticsWorld
         void time_step();
 
         short get_cell() const;
+
+        std::list<Behavior*> get_behaviors() const;
+        std::list<Sense*> get_senses() const;
 
         class BehaviorImpl {
         public:

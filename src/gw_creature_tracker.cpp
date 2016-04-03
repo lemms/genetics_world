@@ -1,5 +1,7 @@
 // gw_creature_tracker.cpp
 
+#include "gw_behavior_factory.h"
+#include "gw_sense_factory.h"
 #include "gw_creature_tracker.h"
 
 GeneticsWorld::CreatureTracker::BehaviorImpl::BehaviorImpl(CreatureTracker* creature_tracker,
@@ -103,10 +105,27 @@ GeneticsWorld::CreatureTracker::CreatureTracker(short cell,
       _is_sexually_reproducing(false),
       _cell(cell)
 {
-    // TODO: copy parent behaviors and senses based on inheritance values
-    // TODO: add random mutations
+    // copy parent behaviors and senses based on inheritance values
+    // add random mutations
     // 1) add new behaiors/sense randomly
     // 2) modify inheritance values randomly
+
+    if (lhs_parent != NULL)
+    {
+        if (rhs_parent != NULL)
+        {
+            // two parents
+        }
+        else
+        {
+            // one parent
+            std::vector<std::list<BehaviorImpl*> 
+            for (std::list<BehaviorImpl*>::iterator it = lhs_parent->_behaviors.begin(), it_end = other._behaviors.end();
+                 it != it_end; ++it)
+            {
+            }
+        }
+    }
 }
 
 GeneticsWorld::CreatureTracker::~CreatureTracker()
@@ -213,3 +232,24 @@ short GeneticsWorld::CreatureTracker::get_cell() const
     return _cell;
 }
 
+std::list<Behavior*> GeneticsWorld::CreatureTracker::get_behaviors() const
+{
+    std::list<Behavior*> behaviors;
+    for (std::list<BehaviorImpl*>::iterator it = _behaviors.begin(), it_end = _behaviors.end();
+         it != it_end; ++it)
+    {
+        behaviors.push_front(new Behavior(*it));
+    }
+    return behaviors;
+}
+
+std::list<Sense*> GeneticsWorld::CreatureTracker::get_senses() const
+{
+    std::list<Sense*> senses;
+    for (std::list<SenseImpl*>::iterator it = _senses.begin(), it_end = _senses.end();
+         it != it_end; ++it)
+    {
+        senses.push_front(new Sense(*it));
+    }
+    return senses;
+}
