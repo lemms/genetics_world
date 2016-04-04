@@ -1,5 +1,6 @@
 // gw_sense_energy
 
+#include <iostream>
 #include <string>
 #include "gw_sense_energy.h"
 
@@ -24,6 +25,7 @@ float GeneticsWorld::SenseEnergyImpl::do_sense()
     {
         _energy() -= 1.0f;
         _senses_used()++;
+        std::cout << "Sensing energy: " << _energy() << std::endl;
         return _energy();
     }
     return 0.0f;

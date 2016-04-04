@@ -211,8 +211,12 @@ template <class T>
 void build_genetics(std::list<T*>& child_features,
                     long num_parent_features,
                     const std::vector<float>& parent_feature_inheritance,
-                    const std::vector<typename std::list<T*>::iterator>& parent_feature)
+                    const std::vector<typename std::list<T*>::iterator>& parent_features)
 {    
+    if (parent_features.empty())
+    {
+        return;
+    }
     // randomly add or subtract a feature
     long random_feature_increment = rand() % 100;
     if (random_feature_increment < 5)
@@ -259,7 +263,7 @@ void build_genetics(std::list<T*>& child_features,
     for (long f = 0; f < num_parent_features; ++f)
     {
         long random_index = rand() % num_randomizing_indices;
-        child_features.push_front((*parent_feature[randomizing_indices[random_index]])->clone());
+        child_features.push_front((*parent_features[randomizing_indices[random_index]])->clone());
     }
 
     // TODO: add a random mutation

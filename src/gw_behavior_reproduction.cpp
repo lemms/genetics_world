@@ -1,5 +1,6 @@
 // gw_behavior_reproduction.cpp
 
+#include <iostream>
 #include <string>
 #include "gw_behavior_reproduction.h"
 
@@ -24,6 +25,7 @@ void GeneticsWorld::BehaviorAsexualReproductionImpl::do_behavior()
         _energy() -= 10.0f;
         _behaviors_used()++;
         _is_asexually_reproducing() = true;
+        std::cout << "Reproducing asexually" << std::endl;
     }
 }
 
