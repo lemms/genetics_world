@@ -4,6 +4,7 @@
 #include <vector>
 #include <cmath>
 #include <cstdlib>
+#include <cassert>
 #include "gw_creature_tracker.h"
 
 GeneticsWorld::CreatureTracker::BehaviorImpl::BehaviorImpl(CreatureTracker* creature_tracker,
@@ -27,7 +28,7 @@ float GeneticsWorld::CreatureTracker::BehaviorImpl::get_inheritance() const
     return _inheritance;
 }
 
-short& GeneticsWorld::CreatureTracker::BehaviorImpl::_life_span()
+long& GeneticsWorld::CreatureTracker::BehaviorImpl::_life_span()
 {
     return _creature_tracker->_life_span;
 }
@@ -37,22 +38,22 @@ float& GeneticsWorld::CreatureTracker::BehaviorImpl::_energy()
     return _creature_tracker->_energy;
 }
 
-short& GeneticsWorld::CreatureTracker::BehaviorImpl::_behaviors_used()
+long& GeneticsWorld::CreatureTracker::BehaviorImpl::_behaviors_used()
 {
     return _creature_tracker->_behaviors_used;
 }
 
-short& GeneticsWorld::CreatureTracker::BehaviorImpl::_senses_used()
+long& GeneticsWorld::CreatureTracker::BehaviorImpl::_senses_used()
 {
     return _creature_tracker->_senses_used;
 }
 
-short& GeneticsWorld::CreatureTracker::BehaviorImpl::_max_behaviors_per_time_step()
+long& GeneticsWorld::CreatureTracker::BehaviorImpl::_max_behaviors_per_time_step()
 {
     return _creature_tracker->_max_behaviors_per_time_step;
 }
 
-short& GeneticsWorld::CreatureTracker::BehaviorImpl::_max_senses_per_time_step()
+long& GeneticsWorld::CreatureTracker::BehaviorImpl::_max_senses_per_time_step()
 {
     return _creature_tracker->_max_senses_per_time_step;
 }
@@ -67,7 +68,7 @@ bool& GeneticsWorld::CreatureTracker::BehaviorImpl::_is_sexually_reproducing()
     return _creature_tracker->_is_sexually_reproducing;
 }
 
-short& GeneticsWorld::CreatureTracker::BehaviorImpl::_cell()
+long& GeneticsWorld::CreatureTracker::BehaviorImpl::_cell()
 {
     return _creature_tracker->_cell;
 }
@@ -93,7 +94,7 @@ float GeneticsWorld::CreatureTracker::SenseImpl::get_inheritance() const
     return _inheritance;
 }
 
-short& GeneticsWorld::CreatureTracker::SenseImpl::_life_span()
+long& GeneticsWorld::CreatureTracker::SenseImpl::_life_span()
 {
     return _creature_tracker->_life_span;
 }
@@ -103,22 +104,22 @@ float& GeneticsWorld::CreatureTracker::SenseImpl::_energy()
     return _creature_tracker->_energy;
 }
 
-short& GeneticsWorld::CreatureTracker::SenseImpl::_behaviors_used()
+long& GeneticsWorld::CreatureTracker::SenseImpl::_behaviors_used()
 {
     return _creature_tracker->_behaviors_used;
 }
 
-short& GeneticsWorld::CreatureTracker::SenseImpl::_senses_used()
+long& GeneticsWorld::CreatureTracker::SenseImpl::_senses_used()
 {
     return _creature_tracker->_senses_used;
 }
 
-short& GeneticsWorld::CreatureTracker::SenseImpl::_max_behaviors_per_time_step()
+long& GeneticsWorld::CreatureTracker::SenseImpl::_max_behaviors_per_time_step()
 {
     return _creature_tracker->_max_behaviors_per_time_step;
 }
 
-short& GeneticsWorld::CreatureTracker::SenseImpl::_max_senses_per_time_step()
+long& GeneticsWorld::CreatureTracker::SenseImpl::_max_senses_per_time_step()
 {
     return _creature_tracker->_max_senses_per_time_step;
 }
@@ -133,7 +134,7 @@ bool& GeneticsWorld::CreatureTracker::SenseImpl::_is_sexually_reproducing()
     return _creature_tracker->_is_sexually_reproducing;
 }
 
-short& GeneticsWorld::CreatureTracker::SenseImpl::_cell()
+long& GeneticsWorld::CreatureTracker::SenseImpl::_cell()
 {
     return _creature_tracker->_cell;
 }
@@ -141,6 +142,7 @@ short& GeneticsWorld::CreatureTracker::SenseImpl::_cell()
 GeneticsWorld::Behavior::Behavior(CreatureTracker::BehaviorImpl* impl)
     : _impl(impl)
 {
+    assert(_impl != NULL);
 }
 
 GeneticsWorld::Behavior::~Behavior()
@@ -149,27 +151,32 @@ GeneticsWorld::Behavior::~Behavior()
 
 void GeneticsWorld::Behavior::do_behavior()
 {
+    assert(_impl != NULL);
     _impl->do_behavior();
 }
 
 void GeneticsWorld::Behavior::set_inheritance(float inheritance)
 {
+    assert(_impl != NULL);
     _impl->set_inheritance(inheritance);
 }
 
 float GeneticsWorld::Behavior::get_inheritance() const
 {
+    assert(_impl != NULL);
     return _impl->get_inheritance();
 }
 
 std::string GeneticsWorld::Behavior::get_name() const
 {
+    assert(_impl != NULL);
     return _impl->get_name();
 }
 
 GeneticsWorld::Sense::Sense(CreatureTracker::SenseImpl* impl)
     : _impl(impl)
 {
+    assert(_impl != NULL);
 }
 
 GeneticsWorld::Sense::~Sense()
@@ -178,32 +185,36 @@ GeneticsWorld::Sense::~Sense()
 
 float GeneticsWorld::Sense::do_sense() const
 {
+    assert(_impl != NULL);
     return _impl->do_sense();
 }
 
 void GeneticsWorld::Sense::set_inheritance(float inheritance)
 {
+    assert(_impl != NULL);
     _impl->set_inheritance(inheritance);
 }
 
 float GeneticsWorld::Sense::get_inheritance() const
 {
+    assert(_impl != NULL);
     return _impl->get_inheritance();
 }
 
 std::string GeneticsWorld::Sense::get_name() const
 {
+    assert(_impl != NULL);
     return _impl->get_name();
 }
 
 template <class T>
 void build_genetics(std::list<T*>& child_features,
-                    short num_parent_features,
+                    long num_parent_features,
                     const std::vector<float>& parent_feature_inheritance,
                     const std::vector<typename std::list<T*>::iterator>& parent_feature)
 {    
     // randomly add or subtract a feature
-    short random_feature_increment = rand() % 100;
+    long random_feature_increment = rand() % 100;
     if (random_feature_increment < 5)
     {
         num_parent_features++;
@@ -220,17 +231,17 @@ void build_genetics(std::list<T*>& child_features,
         total_influence += *it;
     }
 
-    short num_randomizing_indices = 10000;
-    std::vector<short> randomizing_indices(num_randomizing_indices);
+    long num_randomizing_indices = 10000;
+    std::vector<long> randomizing_indices(num_randomizing_indices);
 
-    short index = 0;
-    short original_index = 0;
+    long index = 0;
+    long original_index = 0;
     for (std::vector<float>::const_iterator it = parent_feature_inheritance.cbegin(), it_end = parent_feature_inheritance.cend();
          it != it_end; ++it, ++original_index)
     {
         float percentage = *it / total_influence;
-        short indices = static_cast<short>(percentage * static_cast<float>(num_randomizing_indices));
-        for (short i = 0; i < indices; ++i)
+        long indices = static_cast<long>(percentage * static_cast<float>(num_randomizing_indices));
+        for (long i = 0; i < indices; ++i)
         {
             if (index < randomizing_indices.size())
             {
@@ -245,17 +256,17 @@ void build_genetics(std::list<T*>& child_features,
     }
 
     // TODO: de-duplicate
-    for (short f = 0; f < num_parent_features; ++f)
+    for (long f = 0; f < num_parent_features; ++f)
     {
-        short random_index = rand() % num_randomizing_indices;
-        child_features.push_front((*parent_feature[random_index])->clone());
+        long random_index = rand() % num_randomizing_indices;
+        child_features.push_front((*parent_feature[randomizing_indices[random_index]])->clone());
     }
 
     // TODO: add a random mutation
 }
 
 
-GeneticsWorld::CreatureTracker::CreatureTracker(short cell,
+GeneticsWorld::CreatureTracker::CreatureTracker(long cell,
                                                 CreatureTracker* lhs_parent,
                                                 CreatureTracker* rhs_parent)
     : _life_span(100),
@@ -437,7 +448,7 @@ void GeneticsWorld::CreatureTracker::time_step()
     _life_span--;
 }
 
-short GeneticsWorld::CreatureTracker::get_cell() const
+long GeneticsWorld::CreatureTracker::get_cell() const
 {
     return _cell;
 }

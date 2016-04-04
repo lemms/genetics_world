@@ -5,6 +5,7 @@
 
 #include <vector>
 #include <list>
+#include <cassert>
 #include "gw_behavior_factory.h"
 #include "gw_sense_factory.h"
 #include "gw_creature_tracker.h"
@@ -15,7 +16,7 @@ namespace GeneticsWorld
     template <class Creature>
     class World {
     public:
-        World(short width = 1000, short height = 1000);
+        World(long width = 1000, long height = 1000);
         ~World();
         void add_creature();
         void time_step();
@@ -27,17 +28,17 @@ namespace GeneticsWorld
 
         std::list<CreaturePair> _creatures;
         std::vector<std::list<CreaturePairIterator> > _grid;
-        short _width;
-        short _height;
+        long _width;
+        long _height;
 
-        CreaturePair _spawn_new_creature_in_cell_with_parents(short cell, CreatureTracker* lhs_parent, CreatureTracker* rhs_parent);
-        void _spawn_new_creature_in_cell_with_parent(short cell, CreatureTracker* parent);
-        void _spawn_new_creature_in_cell(short cell);
+        CreaturePair _spawn_new_creature_in_cell_with_parents(long cell, CreatureTracker* lhs_parent, CreatureTracker* rhs_parent);
+        void _spawn_new_creature_in_cell_with_parent(long cell, CreatureTracker* parent);
+        void _spawn_new_creature_in_cell(long cell);
     };
 }
 
 template <class Creature>
-GeneticsWorld::World<Creature>::World(short width, short height) : _width(width), _height(height)
+GeneticsWorld::World<Creature>::World(long width, long height) : _width(width), _height(height)
 {
     _grid.resize(_width * _height);
 }
@@ -51,13 +52,13 @@ GeneticsWorld::World<Creature>::~World()
         delete it->first;
         delete it->second;
     }
-    _creatures.clear();
 }
 
 template <class Creature>
 void GeneticsWorld::World<Creature>::add_creature()
 {
-    short cell = (rand() % _height) * _width + rand() % _width;
+    long cell = (rand() % _height) * _width + rand() % _width;
+    assert(cell >= 0);
     _spawn_new_creature_in_cell(cell);
 }
 
@@ -82,7 +83,7 @@ void GeneticsWorld::World<Creature>::clear_dead_creatures()
         {
             CreaturePairIterator it_delete = it;
             it++;
-            short cell = it_delete->second->get_cell();
+            long cell = it_delete->second->get_cell();
             delete it_delete->first;
             delete it_delete->second;
             _creatures.erase(it_delete);
@@ -94,7 +95,7 @@ template <class Creature>
 void GeneticsWorld::World<Creature>::spawn_born_creatures()
 {
     // spawn new asexual reproduction creatures
-    short cell = 0;
+    long cell = 0;
     for (typename std::vector<std::list<CreaturePairIterator> >::iterator g = _grid.begin(), g_end = _grid.end();
          g != g_end; ++g, ++cell)
     {
@@ -124,7 +125,7 @@ void GeneticsWorld::World<Creature>::spawn_born_creatures()
         }
         while (sexually_reproducing_creatures.size() > 1)
         {
-            short first_creature_index = rand() % sexually_reproducing_creatures.size();
+            long first_creature_index = rand() % sexually_reproducing_creatures.size();
             typename std::list<CreaturePairIterator>::iterator l = sexually_reproducing_creatures.begin();
             for (int i = 0; i < first_creature_index; ++i, ++l) {}
             CreaturePairIterator first_creature = *l;
@@ -133,7 +134,7 @@ void GeneticsWorld::World<Creature>::spawn_born_creatures()
             {
                 break;
             }
-            short second_creature_index = rand() % sexually_reproducing_creatures.size();
+            long second_creature_index = rand() % sexually_reproducing_creatures.size();
             l = sexually_reproducing_creatures.begin();
             for (int i = 0; i < second_creature_index; ++i, ++l) {}
             CreaturePairIterator second_creature = *l;
@@ -144,25 +145,26 @@ void GeneticsWorld::World<Creature>::spawn_born_creatures()
 }
 
 template <class Creature>
-typename GeneticsWorld::World<Creature>::CreaturePair GeneticsWorld::World<Creature>::_spawn_new_creature_in_cell_with_parents(short cell, CreatureTracker* lhs_parent, CreatureTracker* rhs_parent)
+typename GeneticsWorld::World<Creature>::CreaturePair GeneticsWorld::World<Creature>::_spawn_new_creature_in_cell_with_parents(long cell, CreatureTracker* lhs_parent, CreatureTracker* rhs_parent)
 {
     Creature* creature = new Creature;
     CreatureTracker* creature_tracker = new CreatureTracker(cell, lhs_parent, rhs_parent);
     creature->setup(creature_tracker->get_behaviors(), creature_tracker->get_senses());
     CreaturePair creature_pair = std::make_pair(creature, creature_tracker);
     _creatures.push_front(creature_pair);
+    assert(cell >= 0);
     _grid[cell].push_front(_creatures.begin());
     return creature_pair;
 }
 
 template <class Creature>
-void GeneticsWorld::World<Creature>::_spawn_new_creature_in_cell_with_parent(short cell, CreatureTracker* lhs_parent)
+void GeneticsWorld::World<Creature>::_spawn_new_creature_in_cell_with_parent(long cell, CreatureTracker* lhs_parent)
 {
     _spawn_new_creature_in_cell_with_parents(cell, lhs_parent, NULL);
 }
 
 template <class Creature>
-void GeneticsWorld::World<Creature>::_spawn_new_creature_in_cell(short cell)
+void GeneticsWorld::World<Creature>::_spawn_new_creature_in_cell(long cell)
 {
     CreaturePair creature_pair = _spawn_new_creature_in_cell_with_parents(cell, NULL, NULL);
     BehaviorFactory behavior_factory(creature_pair.second);

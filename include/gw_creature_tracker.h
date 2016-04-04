@@ -13,7 +13,7 @@ namespace GeneticsWorld
     class CreatureTracker
     {
     public:
-        CreatureTracker(short cell, CreatureTracker* lhs_parent, CreatureTracker* rhs_parent);
+        CreatureTracker(long cell, CreatureTracker* lhs_parent, CreatureTracker* rhs_parent);
         ~CreatureTracker();
         CreatureTracker(const CreatureTracker& other);
         CreatureTracker& operator=(const CreatureTracker& other);
@@ -24,7 +24,7 @@ namespace GeneticsWorld
 
         void time_step();
 
-        short get_cell() const;
+        long get_cell() const;
 
         std::list<Behavior*> get_behaviors();
         std::list<Sense*> get_senses();
@@ -39,15 +39,15 @@ namespace GeneticsWorld
             virtual std::string get_name() const = 0;
             virtual BehaviorImpl* clone() const = 0;
         protected:
-            short& _life_span();
+            long& _life_span();
             float& _energy();
-            short& _behaviors_used();
-            short& _senses_used();
-            short& _max_behaviors_per_time_step();
-            short& _max_senses_per_time_step();
+            long& _behaviors_used();
+            long& _senses_used();
+            long& _max_behaviors_per_time_step();
+            long& _max_senses_per_time_step();
             bool& _is_asexually_reproducing();
             bool& _is_sexually_reproducing();
-            short& _cell();
+            long& _cell();
             CreatureTracker* _creature_tracker;
             float _inheritance;
         };
@@ -62,15 +62,15 @@ namespace GeneticsWorld
             virtual std::string get_name() const = 0;
             virtual SenseImpl* clone() const = 0;
         protected:
-            short& _life_span();
+            long& _life_span();
             float& _energy();
-            short& _behaviors_used();
-            short& _senses_used();
-            short& _max_behaviors_per_time_step();
-            short& _max_senses_per_time_step();
+            long& _behaviors_used();
+            long& _senses_used();
+            long& _max_behaviors_per_time_step();
+            long& _max_senses_per_time_step();
             bool& _is_asexually_reproducing();
             bool& _is_sexually_reproducing();
-            short& _cell();
+            long& _cell();
             CreatureTracker* _creature_tracker;
             float _inheritance;
         };
@@ -81,15 +81,15 @@ namespace GeneticsWorld
         friend class SenseFactory;
 
     private:
-        short _life_span;
+        long _life_span;
         mutable float _energy;
-        short _behaviors_used;
-        mutable short _senses_used;
-        short _max_behaviors_per_time_step;
-        short _max_senses_per_time_step;
+        long _behaviors_used;
+        mutable long _senses_used;
+        long _max_behaviors_per_time_step;
+        long _max_senses_per_time_step;
         bool _is_asexually_reproducing;
         bool _is_sexually_reproducing;
-        short _cell;
+        long _cell;
 
         std::list<BehaviorImpl*> _behaviors;
         std::list<SenseImpl*> _senses;
