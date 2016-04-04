@@ -35,6 +35,7 @@ namespace GeneticsWorld
             virtual void do_behavior() = 0;
             void set_inheritance(float inheritance);
             float get_inheritance() const;
+            virtual std::string get_name() const = 0;
         protected:
             CreatureTracker* _creature_tracker;
             float _inheritance;
@@ -47,6 +48,7 @@ namespace GeneticsWorld
             virtual float do_sense() const = 0;
             void set_inheritance(float inheritance);
             float get_inheritance() const;
+            virtual std::string get_name() const = 0;
         protected:
             const CreatureTracker* _creature_tracker;
             float _inheritance;
@@ -77,6 +79,7 @@ namespace GeneticsWorld
         void do_behavior() const;
         void set_inheritance(float inheritance);
         float get_inheritance() const;
+        std::string get_name() const;
     };
 
     class Sense {
@@ -86,6 +89,7 @@ namespace GeneticsWorld
         float do_sense() const;
         void set_inheritance(float inheritance);
         float get_inheritance() const;
+        std::string get_name() const;
     };
 }
 

@@ -1,5 +1,6 @@
 // gw_sense_energy
 
+#include <string>
 #include "gw_sense_energy.h"
 
 GeneticsWorld::SenseEnergyImpl::SenseEnergyImpl(const CreatureTracker* creature_tracker,
@@ -21,4 +22,9 @@ float GeneticsWorld::SenseEnergyImpl::do_sense() const
         return _creature_tracker->_energy;
     }
     return 0.0f;
+}
+
+std::string GeneticsWorld::SenseEnergyImpl::get_name() const
+{
+    return std::string("SenseEnergy");
 }

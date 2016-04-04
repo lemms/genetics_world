@@ -1,5 +1,6 @@
 // gw_behavior_reproduction.cpp
 
+#include <string>
 #include "gw_behavior_reproduction.h"
 
 GeneticsWorld::BehaviorAsexualReproductionImpl::BehaviorAsexualReproductionImpl(CreatureTracker* creature_tracker, float inheritance)
@@ -19,4 +20,9 @@ void GeneticsWorld::BehaviorAsexualReproductionImpl::do_behavior() const
         _creature_tracker->_behaviors_used++;
         _creature_tracker->_is_asexually_reproducing = true;
     }
+}
+
+std::string GeneticsWorld::BehaviorAsexualReproductionImpl::get_name() const
+{
+    return std::string("BehaviorAsexualReproduction");
 }

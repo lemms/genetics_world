@@ -12,6 +12,7 @@ namespace GeneticsWorld
         SenseEnergyImpl(const CreatureTracker* creature_tracker, float inheritance);
         virtual ~SenseEnergyImpl();
         virtual float do_sense() const;
+        virtual std::string get_name() const;
     };
 }
 

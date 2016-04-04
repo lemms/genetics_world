@@ -12,6 +12,7 @@ namespace GeneticsWorld
         BehaviorAsexualReproductionImpl(CreatureTracker* creature_tracker, float inheritance);
         virtual ~BehaviorAsexualReproductionImpl();
         virtual void do_behavior();
+        virtual std::string get_name() const;
     }
 }
 

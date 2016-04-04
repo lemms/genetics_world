@@ -1,5 +1,6 @@
 // gw_creature_tracker.cpp
 
+#include <string>
 #include <vector>
 #include <cmath>
 #include "gw_creature_tracker.h"
@@ -68,6 +69,11 @@ float GeneticsWorld::Behavior::get_inheritance() const
     return _impl->get_inheritance();
 }
 
+std::string GeneticsWorld::Behavior::get_name() const
+{
+    return _impl->get_name();
+}
+
 GeneticsWorld::Sense::Sense(SenseImpl* impl)
     : _impl(impl)
 {
@@ -90,6 +96,11 @@ void GeneticsWorld::Sense::set_inheritance(float inheritance)
 float GeneticsWorld::Sense::get_inheritance() const
 {
     return _impl->get_inheritance();
+}
+
+std::string GeneticsWorld::Sense::get_name() const
+{
+    return _impl->get_name();
 }
 
 template <class T>
