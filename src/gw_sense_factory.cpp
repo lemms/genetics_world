@@ -9,9 +9,9 @@ GeneticsWorld::SenseFactory::SenseFactory(CreatureTracker* creature_tracker)
 {
 }
 
-GeneticsWorld::Sense* GeneticsWorld::SenseFactory::get_sense_energy()
+GeneticsWorld::Sense* GeneticsWorld::SenseFactory::get_sense_energy(float inheritance)
 {
-    CreatureTracker::SenseImpl* sense_energy_impl = new SenseEnergyImpl(_creature_tracker);
+    CreatureTracker::SenseImpl* sense_energy_impl = new SenseEnergyImpl(_creature_tracker, inheritance);
     _creature_tracker->_senses.push_front(sense_energy_impl);
     return new Sense(sense_energy_impl);
 }

@@ -5,7 +5,7 @@
 
 namespace GeneticsWorld
 {
-    template <class Creature, template <class> World>
+    template <class Creature, template <class> class World>
     class Driver {
     public:
         Driver();
@@ -13,22 +13,22 @@ namespace GeneticsWorld
         void setup();
         void time_step();
     private:
-        World _world;
+        World<Creature> _world;
     };
 };
 
-template <class Creature, template <class> World>
-GeneticsWorld::Driver::Driver()
+template <class Creature, template <class> class World>
+GeneticsWorld::Driver<Creature, World>::Driver()
 {
 }
 
-template <class Creature, template <class> World>
-GeneticsWorld::Driver::~Driver()
+template <class Creature, template <class> class World>
+GeneticsWorld::Driver<Creature, World>::~Driver()
 {
 }
 
-template <class Creature, template <class> World>
-void GeneticsWorld::Driver::setup()
+template <class Creature, template <class> class World>
+void GeneticsWorld::Driver<Creature, World>::setup()
 {
     for (size_t c = 0; c < 100; ++c)
     {
@@ -36,12 +36,12 @@ void GeneticsWorld::Driver::setup()
     }
 }
 
-template <class Creture, template <class> World>
-void GeneticsWorld::Driver::time_step()
+template <class Creature, template <class> class World>
+void GeneticsWorld::Driver<Creature, World>::time_step()
 {
-    world.time_step();
-    world.clear_dead_creatures();
-    world.spawn_born_creatures();
+    _world.time_step();
+    _world.clear_dead_creatures();
+    _world.spawn_born_creatures();
 }
 
 #endif // GW_DRIVER

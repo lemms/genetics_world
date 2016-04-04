@@ -12,17 +12,27 @@ GeneticsWorld::BehaviorAsexualReproductionImpl::~BehaviorAsexualReproductionImpl
 {
 }
 
-void GeneticsWorld::BehaviorAsexualReproductionImpl::do_behavior() const
+GeneticsWorld::BehaviorAsexualReproductionImpl::BehaviorAsexualReproductionImpl(const BehaviorAsexualReproductionImpl& other)
+    : BehaviorImpl(other._creature_tracker, other._inheritance)
 {
-    if (_creature_tracker->_behaviors_used <= _creature_tracker->_max_behaviors_per_time_step)
+}
+
+void GeneticsWorld::BehaviorAsexualReproductionImpl::do_behavior()
+{
+    if (_behaviors_used() <= _max_behaviors_per_time_step())
     {
-        _creature_tracker->_energy -= 10.0f;
-        _creature_tracker->_behaviors_used++;
-        _creature_tracker->_is_asexually_reproducing = true;
+        _energy() -= 10.0f;
+        _behaviors_used()++;
+        _is_asexually_reproducing() = true;
     }
 }
 
 std::string GeneticsWorld::BehaviorAsexualReproductionImpl::get_name() const
 {
     return std::string("BehaviorAsexualReproduction");
+}
+
+GeneticsWorld::CreatureTracker::BehaviorImpl* GeneticsWorld::BehaviorAsexualReproductionImpl::clone() const
+{
+    return new BehaviorAsexualReproductionImpl(*this);
 }

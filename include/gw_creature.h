@@ -1,14 +1,19 @@
 // gw_creature.h
 
+#include <map>
+
+#include "gw_creature_tracker.h"
+#include "gw_behavior_factory.h"
+#include "gw_sense_factory.h"
+
 namespace GeneticsWorld
 {
-    template <class Behavior, class Sense, class BehaviorFactory, class SenseFactory>
     class TestCreature {
     public:
         ~TestCreature();
 
-        void setup(const BehaviorFactory& behavior_factory,
-                   const SenseFactory& sense_factory);
+        void setup(BehaviorFactory& behavior_factory,
+                   SenseFactory& sense_factory);
         void setup(std::list<Behavior*> behaviors,
                    std::list<Sense*> senses);
 
@@ -19,32 +24,29 @@ namespace GeneticsWorld
     };
 }
 
-template <class Behavior, class Sense, class BehaviorFactory, class SenseFactory>
 GeneticsWorld::TestCreature::~TestCreature()
 {
-    for (std::list<Behavior*>::const_iterator it = _behaviors.cbegin(), it_end = _behaviors.cend();
+    for (std::map<std::string, Behavior*>::const_iterator it = _behaviors.cbegin(), it_end = _behaviors.cend();
          it != it_end; ++it)
     {
         delete it->second;
     }
-    for (std::list<Sense*>::const_iterator it = _senses.cbegin(), it_end = _senses.cend();
+    for (std::map<std::string, Sense*>::const_iterator it = _senses.cbegin(), it_end = _senses.cend();
          it != it_end; ++it)
     {
         delete it->second;
     }
 }
 
-template <class Behavior, class Sense, class BehaviorFactory, class SenseFactory>
-void GeneticsWorld::TestCreature::setup(const BehaviorFactory& behavior_factory,
-                                        const SenseFactory& sense_factory)
+void GeneticsWorld::TestCreature::setup(BehaviorFactory& behavior_factory,
+                                        SenseFactory& sense_factory)
 {
-    Behavior* behavior_asexual_reproduction = behavior_factory.get_behavior_asexual_reproduction();
+    Behavior* behavior_asexual_reproduction = behavior_factory.get_behavior_asexual_reproduction(10.0f);
     _behaviors.insert(std::make_pair(behavior_asexual_reproduction->get_name(), behavior_asexual_reproduction));
-    Sense* sense_energy = sense_factory.get_sense_energy();
+    Sense* sense_energy = sense_factory.get_sense_energy(10.0f);
     _senses.insert(std::make_pair(sense_energy->get_name(), sense_energy));
 }
 
-template <class Behavior, class Sense, class BehaviorFactory, class SenseFactory>
 void GeneticsWorld::TestCreature::setup(std::list<Behavior*> behaviors,
                                         std::list<Sense*> senses)
 {
@@ -60,11 +62,10 @@ void GeneticsWorld::TestCreature::setup(std::list<Behavior*> behaviors,
     }
 }
 
-template <class Behavior, class Sense, class BehaviorFactory, class SenseFactory>
 void GeneticsWorld::TestCreature::time_step()
 {
-    if (_senses["SenseEnergy"].do_sense() > 0.0f)
+    if (_senses["SenseEnergy"]->do_sense() > 0.0f)
     {
-        _behaviors["BehaviorAsexualReproduction"].do_behavior();
+        _behaviors["BehaviorAsexualReproduction"]->do_behavior();
     }
 }

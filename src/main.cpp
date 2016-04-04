@@ -1,4 +1,5 @@
 #include <iostream>
+
 #include "genetics_world.h"
 #include "gw_driver.h"
 #include "gw_world.h"
@@ -10,8 +11,7 @@ int main(int argc, char** argv)
                  GENETICS_WORLD_VERSION_MAJOR << "." <<
                  GENETICS_WORLD_VERSION_MINOR << std::endl;
 
-    GeneticsWorld::Driver<GeneticsWorld::TestCreature,
-                          GeneticsWorld::World<GeneticsWorld::BasicCreature> > driver();
+    GeneticsWorld::Driver<GeneticsWorld::TestCreature, GeneticsWorld::World> driver;
     driver.setup();
     for (size_t t = 0; t < 10000; ++t)
     {

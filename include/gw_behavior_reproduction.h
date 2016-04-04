@@ -11,9 +11,11 @@ namespace GeneticsWorld
     public:
         BehaviorAsexualReproductionImpl(CreatureTracker* creature_tracker, float inheritance);
         virtual ~BehaviorAsexualReproductionImpl();
+        BehaviorAsexualReproductionImpl(const BehaviorAsexualReproductionImpl& other);
         virtual void do_behavior();
         virtual std::string get_name() const;
-    }
+        virtual CreatureTracker::BehaviorImpl* clone() const;
+    };
 }
 
 #endif // GW_BEHAVIOR_REPRODUCTION

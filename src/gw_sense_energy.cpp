@@ -3,7 +3,7 @@
 #include <string>
 #include "gw_sense_energy.h"
 
-GeneticsWorld::SenseEnergyImpl::SenseEnergyImpl(const CreatureTracker* creature_tracker,
+GeneticsWorld::SenseEnergyImpl::SenseEnergyImpl(CreatureTracker* creature_tracker,
                                                 float inheritance)
     : SenseImpl(creature_tracker, inheritance)
 {
@@ -13,13 +13,18 @@ GeneticsWorld::SenseEnergyImpl::~SenseEnergyImpl()
 {
 }
 
-float GeneticsWorld::SenseEnergyImpl::do_sense() const
+GeneticsWorld::SenseEnergyImpl::SenseEnergyImpl(const SenseEnergyImpl& other)
+    : SenseImpl(other._creature_tracker, other._inheritance)
 {
-    if (_creature_tracker->_senses_used <= _creature_tracker->_max_senses_per_time_step)
+}
+
+float GeneticsWorld::SenseEnergyImpl::do_sense()
+{
+    if (_senses_used() <= _max_senses_per_time_step())
     {
-        _creature_tracker->_energy -= 1.0f;
-        _creature_tracker->_senses_used++;
-        return _creature_tracker->_energy;
+        _energy() -= 1.0f;
+        _senses_used()++;
+        return _energy();
     }
     return 0.0f;
 }
@@ -27,4 +32,9 @@ float GeneticsWorld::SenseEnergyImpl::do_sense() const
 std::string GeneticsWorld::SenseEnergyImpl::get_name() const
 {
     return std::string("SenseEnergy");
+}
+
+GeneticsWorld::CreatureTracker::SenseImpl* GeneticsWorld::SenseEnergyImpl::clone() const
+{
+    return new SenseEnergyImpl(*this);
 }

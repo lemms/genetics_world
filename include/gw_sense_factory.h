@@ -10,7 +10,7 @@ namespace GeneticsWorld
     class SenseFactory {
     public:
         SenseFactory(CreatureTracker* creature_tracker);
-        Sense* get_sense_energy();
+        Sense* get_sense_energy(float inheritance);
     private:
         CreatureTracker* _creature_tracker;
     };

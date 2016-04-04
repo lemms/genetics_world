@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <cmath>
+#include <cstdlib>
 #include "gw_creature_tracker.h"
 
 GeneticsWorld::CreatureTracker::BehaviorImpl::BehaviorImpl(CreatureTracker* creature_tracker,
@@ -26,26 +27,118 @@ float GeneticsWorld::CreatureTracker::BehaviorImpl::get_inheritance() const
     return _inheritance;
 }
 
-GeneticsWorld::CreatureTracker::SenseImpl::SenseImpl(const CreatureTracker* creature_tracker,
+short& GeneticsWorld::CreatureTracker::BehaviorImpl::_life_span()
+{
+    return _creature_tracker->_life_span;
+}
+
+float& GeneticsWorld::CreatureTracker::BehaviorImpl::_energy()
+{
+    return _creature_tracker->_energy;
+}
+
+short& GeneticsWorld::CreatureTracker::BehaviorImpl::_behaviors_used()
+{
+    return _creature_tracker->_behaviors_used;
+}
+
+short& GeneticsWorld::CreatureTracker::BehaviorImpl::_senses_used()
+{
+    return _creature_tracker->_senses_used;
+}
+
+short& GeneticsWorld::CreatureTracker::BehaviorImpl::_max_behaviors_per_time_step()
+{
+    return _creature_tracker->_max_behaviors_per_time_step;
+}
+
+short& GeneticsWorld::CreatureTracker::BehaviorImpl::_max_senses_per_time_step()
+{
+    return _creature_tracker->_max_senses_per_time_step;
+}
+
+bool& GeneticsWorld::CreatureTracker::BehaviorImpl::_is_asexually_reproducing()
+{
+    return _creature_tracker->_is_asexually_reproducing;
+}
+
+bool& GeneticsWorld::CreatureTracker::BehaviorImpl::_is_sexually_reproducing()
+{
+    return _creature_tracker->_is_sexually_reproducing;
+}
+
+short& GeneticsWorld::CreatureTracker::BehaviorImpl::_cell()
+{
+    return _creature_tracker->_cell;
+}
+
+GeneticsWorld::CreatureTracker::SenseImpl::SenseImpl(CreatureTracker* creature_tracker,
                                                      float inheritance)
     : _creature_tracker(creature_tracker),
       _inheritance(inheritance)
 {
 }
 
-GeneticsWorld::CreatureTracker::SenseImpl::~Sense()
+GeneticsWorld::CreatureTracker::SenseImpl::~SenseImpl()
 {
 }
 
 void GeneticsWorld::CreatureTracker::SenseImpl::set_inheritance(float inheritance)
 {
+    _inheritance = inheritance;
 }
 
 float GeneticsWorld::CreatureTracker::SenseImpl::get_inheritance() const
 {
+    return _inheritance;
 }
 
-GeneticsWorld::Behavior::Behavior(BehaviorImpl* impl)
+short& GeneticsWorld::CreatureTracker::SenseImpl::_life_span()
+{
+    return _creature_tracker->_life_span;
+}
+
+float& GeneticsWorld::CreatureTracker::SenseImpl::_energy()
+{
+    return _creature_tracker->_energy;
+}
+
+short& GeneticsWorld::CreatureTracker::SenseImpl::_behaviors_used()
+{
+    return _creature_tracker->_behaviors_used;
+}
+
+short& GeneticsWorld::CreatureTracker::SenseImpl::_senses_used()
+{
+    return _creature_tracker->_senses_used;
+}
+
+short& GeneticsWorld::CreatureTracker::SenseImpl::_max_behaviors_per_time_step()
+{
+    return _creature_tracker->_max_behaviors_per_time_step;
+}
+
+short& GeneticsWorld::CreatureTracker::SenseImpl::_max_senses_per_time_step()
+{
+    return _creature_tracker->_max_senses_per_time_step;
+}
+
+bool& GeneticsWorld::CreatureTracker::SenseImpl::_is_asexually_reproducing()
+{
+    return _creature_tracker->_is_asexually_reproducing;
+}
+
+bool& GeneticsWorld::CreatureTracker::SenseImpl::_is_sexually_reproducing()
+{
+    return _creature_tracker->_is_sexually_reproducing;
+}
+
+short& GeneticsWorld::CreatureTracker::SenseImpl::_cell()
+{
+    return _creature_tracker->_cell;
+}
+
+GeneticsWorld::Behavior::Behavior(CreatureTracker::BehaviorImpl* impl)
     : _impl(impl)
 {
 }
@@ -74,7 +167,7 @@ std::string GeneticsWorld::Behavior::get_name() const
     return _impl->get_name();
 }
 
-GeneticsWorld::Sense::Sense(SenseImpl* impl)
+GeneticsWorld::Sense::Sense(CreatureTracker::SenseImpl* impl)
     : _impl(impl)
 {
 }
@@ -107,7 +200,7 @@ template <class T>
 void build_genetics(std::list<T*>& child_features,
                     short num_parent_features,
                     const std::vector<float>& parent_feature_inheritance,
-                    const std::vector<std::list<T*>::iterator>& parent_feature)
+                    const std::vector<typename std::list<T*>::iterator>& parent_feature)
 {    
     // randomly add or subtract a feature
     short random_feature_increment = rand() % 100;
@@ -155,7 +248,7 @@ void build_genetics(std::list<T*>& child_features,
     for (short f = 0; f < num_parent_features; ++f)
     {
         short random_index = rand() % num_randomizing_indices;
-        child_features.push_front(new T(*(*parent_feature[random_index]));
+        child_features.push_front((*parent_feature[random_index])->clone());
     }
 
     // TODO: add a random mutation
@@ -163,8 +256,8 @@ void build_genetics(std::list<T*>& child_features,
 
 
 GeneticsWorld::CreatureTracker::CreatureTracker(short cell,
-                                                const CreatureTracker* lhs_parent,
-                                                const CreatureTracker* rhs_parent)
+                                                CreatureTracker* lhs_parent,
+                                                CreatureTracker* rhs_parent)
     : _life_span(100),
       _energy(100.0f),
       _behaviors_used(0),
@@ -185,33 +278,33 @@ GeneticsWorld::CreatureTracker::CreatureTracker(short cell,
         if (rhs_parent != NULL)
         {
             // two parents
-            std::vector<float>& parent_behavior_inheritance;
-            std::vector<std::list<BehaviorImpl*>::iterator>& parent_behaviors;
-            for (std::list<BehaviorImpl*>::const_iterator it = lhs_parent->_behaviors.cbegin(), it_end = lhs_parent->_behaviors.end();
+            std::vector<float> parent_behavior_inheritance;
+            std::vector<std::list<BehaviorImpl*>::iterator> parent_behaviors;
+            for (std::list<BehaviorImpl*>::iterator it = lhs_parent->_behaviors.begin(), it_end = lhs_parent->_behaviors.end();
                  it != it_end; ++it)
             {
-                parent_behavior_inheritance.push_back(fabsf(it->get_inheritance()));
+                parent_behavior_inheritance.push_back(fabsf((*it)->get_inheritance()));
                 parent_behaviors.push_back(it);
             }
-            for (std::list<BehaviorImpl*>::const_iterator it = rhs_parent->_behaviors.cbegin(), it_end = rhs_parent->_behaviors.end();
+            for (std::list<BehaviorImpl*>::iterator it = rhs_parent->_behaviors.begin(), it_end = rhs_parent->_behaviors.end();
                  it != it_end; ++it)
             {
-                parent_behavior_inheritance.push_back(fabsf(it->get_inheritance()));
+                parent_behavior_inheritance.push_back(fabsf((*it)->get_inheritance()));
                 parent_behaviors.push_back(it);
             }
 
-            std::vector<float>& parent_sense_inheritance;
-            std::vector<std::list<SenseImpl*>::iterator>& parent_senses;
-            for (std::list<SenseImpl*>::const_iterator it = lhs_parent->_senses.cbegin(), it_end = lhs_parent->_senses.end();
+            std::vector<float> parent_sense_inheritance;
+            std::vector<std::list<SenseImpl*>::iterator> parent_senses;
+            for (std::list<SenseImpl*>::iterator it = lhs_parent->_senses.begin(), it_end = lhs_parent->_senses.end();
                  it != it_end; ++it)
             {
-                parent_sense_inheritance.push_back(fabsf(it->get_inheritance()));
+                parent_sense_inheritance.push_back(fabsf((*it)->get_inheritance()));
                 parent_senses.push_back(it);
             }
-            for (std::list<SenseImpl*>::const_iterator it = rhs_parent->_senses.cbegin(), it_end = rhs_parent->_senses.end();
+            for (std::list<SenseImpl*>::iterator it = rhs_parent->_senses.begin(), it_end = rhs_parent->_senses.end();
                  it != it_end; ++it)
             {
-                parent_sense_inheritance.push_back(fabsf(it->get_inheritance()));
+                parent_sense_inheritance.push_back(fabsf((*it)->get_inheritance()));
                 parent_senses.push_back(it);
             }
 
@@ -221,21 +314,21 @@ GeneticsWorld::CreatureTracker::CreatureTracker(short cell,
         else
         {
             // one parent
-            std::vector<float>& parent_behavior_inheritance;
-            std::vector<std::list<BehaviorImpl*>::iterator>& parent_behaviors;
-            for (std::list<BehaviorImpl*>::const_iterator it = lhs_parent->_behaviors.cbegin(), it_end = lhs_parent->_behaviors.end();
+            std::vector<float> parent_behavior_inheritance;
+            std::vector<std::list<BehaviorImpl*>::iterator> parent_behaviors;
+            for (std::list<BehaviorImpl*>::iterator it = lhs_parent->_behaviors.begin(), it_end = lhs_parent->_behaviors.end();
                  it != it_end; ++it)
             {
-                parent_behavior_inheritance.push_back(fabsf(it->get_inheritance()));
+                parent_behavior_inheritance.push_back(fabsf((*it)->get_inheritance()));
                 parent_behaviors.push_back(it);
             }
 
-            std::vector<float>& parent_sense_inheritance;
-            std::vector<std::list<SenseImpl*>::iterator>& parent_senses;
-            for (std::list<SenseImpl*>::const_iterator it = lhs_parent->_senses.cbegin(), it_end = lhs_parent->_senses.end();
+            std::vector<float> parent_sense_inheritance;
+            std::vector<std::list<SenseImpl*>::iterator> parent_senses;
+            for (std::list<SenseImpl*>::iterator it = lhs_parent->_senses.begin(), it_end = lhs_parent->_senses.end();
                  it != it_end; ++it)
             {
-                parent_sense_inheritance.push_back(fabsf(it->get_inheritance()));
+                parent_sense_inheritance.push_back(fabsf((*it)->get_inheritance()));
                 parent_senses.push_back(it);
             }
 
@@ -270,15 +363,15 @@ GeneticsWorld::CreatureTracker::CreatureTracker(const CreatureTracker& other)
     _is_asexually_reproducing = other._is_asexually_reproducing;
     _is_sexually_reproducing = other._is_sexually_reproducing;
     _cell = other._cell;
-    for (std::list<BehaviorImpl*>::iterator it = other._behaviors.begin(), it_end = other._behaviors.end();
+    for (std::list<BehaviorImpl*>::const_iterator it = other._behaviors.begin(), it_end = other._behaviors.end();
          it != it_end; ++it)
     {
-        _behaviors.push_front(new BehaviorImpl(*it));
+        _behaviors.push_front((*it)->clone());
     }
-    for (std::list<SenseImpl*>::iterator it = other._senses.begin(), it_end = other._senses.end();
+    for (std::list<SenseImpl*>::const_iterator it = other._senses.begin(), it_end = other._senses.end();
          it != it_end; ++it)
     {
-        _senses.push_front(new SenseImpl(*it));
+        _senses.push_front((*it)->clone());
     }
 }
 
@@ -307,15 +400,15 @@ GeneticsWorld::CreatureTracker& GeneticsWorld::CreatureTracker::operator=(const 
         }
         _behaviors.clear();
         _senses.clear();
-        for (std::list<BehaviorImpl*>::iterator it = other._behaviors.begin(), it_end = other._behaviors.end();
+        for (std::list<BehaviorImpl*>::const_iterator it = other._behaviors.cbegin(), it_end = other._behaviors.cend();
              it != it_end; ++it)
         {
-            _behaviors.push_front(new BehaviorImpl(*it));
+            _behaviors.push_front((*it)->clone());
         }
-        for (std::list<SenseImpl*>::iterator it = other._senses.begin(), it_end = other._senses.end();
+        for (std::list<SenseImpl*>::const_iterator it = other._senses.cbegin(), it_end = other._senses.cend();
              it != it_end; ++it)
         {
-            _senses.push_front(new SenseImpl(*it));
+            _senses.push_front((*it)->clone());
         }
     }
     return *this;
@@ -349,7 +442,7 @@ short GeneticsWorld::CreatureTracker::get_cell() const
     return _cell;
 }
 
-std::list<Behavior*> GeneticsWorld::CreatureTracker::get_behaviors() const
+std::list<GeneticsWorld::Behavior*> GeneticsWorld::CreatureTracker::get_behaviors()
 {
     std::list<Behavior*> behaviors;
     for (std::list<BehaviorImpl*>::iterator it = _behaviors.begin(), it_end = _behaviors.end();
@@ -360,7 +453,7 @@ std::list<Behavior*> GeneticsWorld::CreatureTracker::get_behaviors() const
     return behaviors;
 }
 
-std::list<Sense*> GeneticsWorld::CreatureTracker::get_senses() const
+std::list<GeneticsWorld::Sense*> GeneticsWorld::CreatureTracker::get_senses()
 {
     std::list<Sense*> senses;
     for (std::list<SenseImpl*>::iterator it = _senses.begin(), it_end = _senses.end();
